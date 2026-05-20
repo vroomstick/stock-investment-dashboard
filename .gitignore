@@ -1,0 +1,39 @@
+# Private learning notes — never commit
+NOTES.md
+
+# Database file — contains real data, never commit
+database/*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment — real keys, never commit
+.env
+config/secrets.py
+# .env.example is intentionally NOT ignored — it's a safe template
+
+# Conda / virtualenv
+.conda/
+venv/
+env/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Trained model files (large binaries)
+models/*.json
+models/*.pt
+models/*.pkl
+
+# Logs
+*.log
+logs/

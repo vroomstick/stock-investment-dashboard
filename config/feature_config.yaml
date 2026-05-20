@@ -1,0 +1,189 @@
+# feature_config.yaml
+# Defines which features belong to which category, their expected data types,
+# how to handle missing values, and how to normalize them for the ML model.
+#
+# Why YAML for this and not Python?
+# YAML is human-readable config, not code. A non-programmer (Manuj) can read
+# and edit feature definitions without touching Python. Python dicts of this
+# size also get unwieldy. YAML is the standard for config in ML projects.
+
+fundamental:
+  source: "yfinance + SEC XBRL"
+  update_frequency: "quarterly"
+  normalization: "z-score within sector"  # compare Apple's P/E to other tech stocks
+  missing_value_strategy: "forward-fill then sector-median"
+  features:
+    profitability:
+      - roe
+      - roa
+      - roic
+      - gross_margin
+      - operating_margin
+      - net_margin
+      - gross_margin_trend
+      - operating_margin_trend
+    valuation:
+      - pe_ratio
+      - forward_pe
+      - pb_ratio
+      - ps_ratio
+      - ev_ebitda
+      - peg_ratio
+      - pe_vs_sector_avg
+    growth:
+      - revenue_growth_yoy
+      - revenue_growth_qoq
+      - earnings_growth_yoy
+      - revenue_acceleration
+      - book_value_growth
+      - fcf_growth
+    quality:
+      - debt_to_equity
+      - current_ratio
+      - interest_coverage
+      - piotroski_f_score
+      - altman_z_score
+      - accruals_ratio
+      - cash_vs_earnings_quality
+    piotroski_components:
+      - p_positive_net_income
+      - p_positive_operating_cf
+      - p_roa_increasing
+      - p_cf_greater_than_ni
+      - p_debt_ratio_decreasing
+      - p_current_ratio_increasing
+      - p_no_new_shares
+      - p_gross_margin_increasing
+      - p_asset_turnover_increasing
+    efficiency:
+      - asset_turnover
+      - inventory_turnover
+      - receivables_turnover
+      - days_sales_outstanding
+
+technical:
+  source: "yfinance daily OHLCV"
+  update_frequency: "daily"
+  normalization: "global z-score"  # price-derived ratios are already relative
+  missing_value_strategy: "forward-fill"
+  features:
+    moving_averages:
+      - sma_10
+      - sma_20
+      - sma_50
+      - sma_100
+      - sma_200
+      - ema_10
+      - ema_20
+      - ema_50
+      - price_vs_sma50
+      - price_vs_sma200
+      - sma50_vs_sma200
+      - sma50_slope
+      - sma200_slope
+    momentum:
+      - rsi_14
+      - rsi_7
+      - macd
+      - macd_signal
+      - macd_histogram
+      - stochastic_k
+      - stochastic_d
+      - williams_r
+      - momentum_10d
+      - momentum_30d
+      - momentum_90d
+    volatility:
+      - bollinger_upper
+      - bollinger_lower
+      - bollinger_pct_b
+      - bollinger_bandwidth
+      - atr_14
+      - realized_vol_20d
+      - realized_vol_60d
+      - vol_ratio
+    volume:
+      - volume_ratio_10d
+      - volume_ratio_30d
+      - volume_trend_20d
+      - obv
+      - obv_trend
+      - accumulation_distribution
+      - volume_price_trend
+    relative_strength:
+      - relative_strength_vs_spy
+      - relative_strength_vs_sector
+      - beta_60d
+      - correlation_spy_60d
+
+macro:
+  source: "FRED API"
+  update_frequency: "daily (FRED release cadence varies)"
+  normalization: "global z-score"
+  missing_value_strategy: "forward-fill (macro data releases lag)"
+  features:
+    rates:
+      - treasury_10y
+      - treasury_2y
+      - yield_curve_slope
+      - fed_funds_rate
+      - fed_rate_change_3m
+      - credit_spread
+      - credit_spread_change
+    economy:
+      - gdp_growth
+      - unemployment_rate
+      - unemployment_change
+      - cpi_yoy
+      - cpi_change_3m
+      - initial_claims
+      - initial_claims_4wk_avg
+    market_regime:
+      - vix_level
+      - vix_change_5d
+      - vix_percentile_1y
+      - market_breadth
+      - dollar_index
+      - dollar_change_30d
+      - m2_growth
+    sector_rotation:
+      - sector_momentum_xlk
+      - sector_momentum_xlf
+      - sector_momentum_xlv
+      - sector_momentum_xle
+      - sector_momentum_xli
+      - sector_momentum_xlp
+      - sector_momentum_xly
+      - growth_vs_value
+
+sentiment:
+  source: "Reddit (PRAW) + RSS news feeds + SEC Form 4 / 8-K"
+  update_frequency: "daily"
+  normalization: "global z-score"
+  missing_value_strategy: "zero-fill (absence of news = neutral sentiment)"
+  features:
+    reddit:
+      - reddit_mention_count_7d
+      - reddit_mention_change
+      - reddit_sentiment_avg_7d
+      - reddit_sentiment_std_7d
+      - reddit_bullish_ratio
+      - reddit_post_score_avg
+      - reddit_comment_ratio
+      - wsb_mention_flag
+    news:
+      - news_volume_7d
+      - news_volume_change
+      - news_sentiment_avg_7d
+      - news_sentiment_30d
+      - news_sentiment_momentum
+      - negative_news_flag
+    institutional:
+      - insider_buy_count_30d
+      - insider_sell_count_30d
+      - insider_net_sentiment
+      - insider_dollar_volume
+      - activist_filing_flag
+      - activist_stake_change
+      - material_event_count_30d
+      - negative_8k_flag
