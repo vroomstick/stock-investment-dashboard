@@ -37,3 +37,6 @@ models/*.pkl
 # Logs
 *.log
 logs/
+
+# Agent workspace — never commit
+workspace/
